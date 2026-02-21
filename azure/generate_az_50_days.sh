@@ -57,7 +57,7 @@ for i in "${!titles[@]}"; do
     day=$((i+1))
     title="${titles[$i]}"
 
-    folder="Day-${day} : $(echo "$title" | tr ' ' '-' | tr -cd '[:alnum:]-')"
+    folder="Day ${day}: $(echo "$title" | tr ' ' '-' | tr -cd '[:alnum:]-')"
 
     mkdir -p "$folder"
 
