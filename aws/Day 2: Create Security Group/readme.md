@@ -1,4 +1,4 @@
-# Create Security Group
+# Day 2: Create Security Group
 ### Task 
 - create a security group under default VPC with the following requirements:
 - Name of the security group is datacenter-sg.

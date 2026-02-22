@@ -1,4 +1,4 @@
-## Aws create key pair
+## Day 1: Create Key Pair
 
 ### task: Create a key pair in AWS.
 - Name of the key pair should be devops-kp.
