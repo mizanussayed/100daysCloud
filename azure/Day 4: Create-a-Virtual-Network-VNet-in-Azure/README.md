@@ -16,8 +16,6 @@ Create a Virtual Network (VNet) named nautilus-vnet in the southcentralus region
 7. Fill in the subnet details:
    - Subnet name: Enter a name for your subnet (e.g., "nautilus-subnet").
    - Subnet address range: Enter an IPv4 CIDR block (e.g., "10.0.1.0/24").
-8. Click "Add" to create the subnet.
-9. Review the settings and click "Create" to deploy the VNet.
 
 ## by command line:
 You can also create a VNet using the Azure CLI with the following command:
