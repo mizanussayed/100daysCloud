@@ -1,21 +1,27 @@
 # Day 7: Create a Public IP Address for Azure VM
 
-## 🎯 Objective
-Describe what you aim to achieve in this lab.
 
-## 🛠 Steps Performed
-1.
-2.
-3.
+### task: 
+- allocate a Public IP address, name it as xfusion-pip.
 
-## 💻 Commands Used
+### solution:
+1. Go to Azure Portal, click Create a resource, search for Public IP address, and click Create.
+2. Fill in the form as below, and click Review + create.
+    - Subscription: your subscription
+    - Resource group: xfusion-rg
+    - Name: xfusion-pip
+    - SKU: Basic
+    - IP version: IPv4
+    - Assignment method: Dynamic
+
+### By Command Line Interface (CLI):
 ```bash
-
+az network public-ip create \
+  --resource-group xfusion-rg \
+  --name xfusion-pip \
+  --sku Basic \
+  --version IPv4 \
+  --allocation-method Dynamic
 ```
 
-## 📘 Notes
-Add important observations here.
-
-## ✅ Outcome
-What was successfully completed?
 
