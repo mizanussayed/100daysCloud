@@ -1,21 +1,17 @@
 # Day 16: Create IAM User
+# task:
+ create an IAM user named iamuser_kareem.
 
-## 🎯 Objective
-Describe what this AWS lab accomplishes.
 
-## 🛠 Steps Performed
-1.
-2.
-3.
 
-## 💻 Commands Used
+## Solution
+Follow the steps below to create an IAM user named iamuser_kareem.
+
+- From left side of the AWS Management Console, click on Services and then select IAM under Security, Identity, & Compliance.
+
+
+### by CLI
 ```bash
-
+aws iam create-user --user-name iamuser_kareem
 ```
-
-## 🧠 Concepts Covered
-- 
-
-## ✅ Outcome
-What was successfully achieved?
 
