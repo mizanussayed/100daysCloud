@@ -2,10 +2,7 @@
 # task:
  create an IAM user named iamuser_kareem.
 
-
-
 ## Solution
-Follow the steps below to create an IAM user named iamuser_kareem.
 
 - From left side of the AWS Management Console, click on Services and then select IAM under Security, Identity, & Compliance.
 
@@ -13,5 +10,8 @@ Follow the steps below to create an IAM user named iamuser_kareem.
 ### by CLI
 ```bash
 aws iam create-user --user-name iamuser_kareem
+
+# verify
+aws iam list-users --query "Users[?UserName=='iamuser_kareem'].UserName" --output text
 ```
 
