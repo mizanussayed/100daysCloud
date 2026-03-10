@@ -1,6 +1,6 @@
 # Day 19: Convert Public Azure Blob Container to Private
 
-## 🎯 task: is to convert a public Azure Blob container to private.
+## 🎯 Task
 
 Two blob containers named `devops-container-25941` and `devops-priv-17476` are available in the centralus region within the storage account `devopsst5088`. The `devops-container-25941` is currently public, and `devops-priv-17476` is private.
 
@@ -15,7 +15,7 @@ Prerequisite (Azure AD authentication):
 az login
 ```
 
-## first to check the access level of the blob container `devops-container-25941` and `devops-priv-17476` using Azure CLI:
+## First to check the access level of the blob container `devops-container-25941` and `devops-priv-17476` using Azure CLI:
 
 ```bash
 az storage container show --name devops-container-25941 --account-name devopsst5088 --query "publicAccess" --auth-mode login
