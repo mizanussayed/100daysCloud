@@ -34,7 +34,7 @@ az vm create \
   --resource-group <group-name> \
   --name xfusion-vm \
   --location eastus \
-  --image UbuntuLTS \
+  --image Ubuntu2204 \
   --size Standard_B1s \
   --admin-username azureuser \
   --generate-ssh-keys \
