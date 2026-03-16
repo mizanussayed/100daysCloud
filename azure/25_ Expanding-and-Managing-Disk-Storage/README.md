@@ -15,7 +15,6 @@ To expand the existing VM disk, follow these steps:
 3. In the VM settings, click on "Disks" under the "Settings" section.
 4. Select the OS disk (usually named something like "devops-vm_OSDisk").
 5. Click on "Size + performance" and select the new size (64Gi).
-6. Click "Resize" to apply the changes.
 
 ### Step 2: Create and mount a new data disk
 To create and mount a new data disk, follow these steps:
@@ -46,6 +45,25 @@ az disk update --resource-group <ResourceGroupName> --name <OSDiskName> --size-g
 az vm start --resource-group <ResourceGroupName> --name devops-vm
 ```
 
+1. SSH into the VM and expand the OS partition/filesystem:
+```bash
+ssh <username>@<VM-Public-IP>
+
+# install growpart if not already installed
+sudo apt-get update
+sudo apt-get install -y cloud-guest-utils
+
+# detect root disk and partition (example output: /dev/sdb and partition 1)
+lsblk
+
+# example for root on /dev/sdb1
+sudo growpart /dev/sdb 1
+sudo resize2fs /dev/sdb1
+
+# verify root filesystem size increased
+df -h /
+```
+
 1. To create a new data disk, use the following command:
 ```bash
 az disk create --resource-group <ResourceGroupName> --name devops-disk --size-gb 64 --sku Standard_LRS
@@ -53,5 +71,35 @@ az disk create --resource-group <ResourceGroupName> --name devops-disk --size-gb
 
 1. To mount the new data disk to the VM, use the following command:
 ```bash
-az vm disk attach --resource-group <ResourceGroupName> --vm-name devops-vm --disk devops-disk --lun 1
+az vm disk attach --resource-group <ResourceGroupName> --vm-name devops-vm --name devops-disk --lun 1
+```
+
+1. SSH into the VM and format and mount the disk:
+```bash
+# SSH into the VM
+ssh <username>@<VM-Public-IP>
+
+# Identify the new unpartitioned 64G disk (typically /dev/sdc or /dev/sdd)
+lsblk
+
+# Create a GPT partition and one primary partition
+sudo parted -s /dev/<DataDisk> mklabel gpt
+sudo parted -s /dev/<DataDisk> mkpart primary ext4 0% 100%
+
+# Format the partition with ext4 filesystem
+sudo mkfs.ext4 /dev/<DataDisk>1
+
+# Create the mount point
+sudo mkdir -p /mnt/devops-disk
+
+# Mount the partition
+sudo mount /dev/<DataDisk>1 /mnt/devops-disk
+
+# Make the mount persistent across reboots using UUID
+UUID=$(sudo blkid -s UUID -o value /dev/<DataDisk>1)
+echo "UUID=$UUID /mnt/devops-disk ext4 defaults,nofail 0 2" | sudo tee -a /etc/fstab
+sudo mount -a
+
+# Verify the mount
+df -h /mnt/devops-disk
 ```
