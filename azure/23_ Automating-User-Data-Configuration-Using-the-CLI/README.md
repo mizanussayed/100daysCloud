@@ -18,12 +18,8 @@ Instructions:
 Use Azure CLI commands to set up the VM in the specified configuration.
 Ensure the VM is accessible from the internet on port 80.
 The Nginx service should be running after setup.
-
 Use the Azure CLI commands to complete the task.
 
-Notes:
-Create the resources only in the East US region.
-You may use the default resource group or create a new one if needed.
 
 
 ## Solution:

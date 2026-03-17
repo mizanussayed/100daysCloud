@@ -1,49 +1,94 @@
 # Day 25: Setting Up an EC2 Instance and CloudWatch Alarm
 
-## 🎯 The Nautilus DevOps team has been tasked with setting up an EC2 instance for their application. To ensure the application performs optimally, they also need to create a CloudWatch alarm to monitor the instance's CPU utilization. The alarm should trigger if the CPU utilization exceeds 90% for one consecutive 5-minute period. To send notifications, use the SNS topic named devops-sns-topic which is already created.
+## 🎯 task is to create an EC2 instance and configure a CloudWatch alarm using AWS CLI with the following specifications:
 
-Launch EC2 Instance: Create an EC2 instance named devops-ec2 using any appropriate Ubuntu AMI.
+- Instance Name: The EC2 instance must be named devops-ec2.
+- Image: Use any available Ubuntu AMI.
+- Alarm Name: Create a CloudWatch alarm named devops-alarm.
+- Metric: CPUUtilization for the created EC2 instance.
+- Statistic and Period: Average over 5 minutes.
+- Threshold: Trigger when CPU utilization is greater than or equal to 90%.
+- Evaluation: 1 consecutive period.
+- Notification: Send alarm notifications to the existing SNS topic devops-sns-topic.
 
-Create CloudWatch Alarm: Create a CloudWatch alarm named devops-alarm with the following specifications:
+Instructions:
 
-Statistic: Average
-Metric: CPU Utilization
-Threshold: >= 90% for 1 consecutive 5-minute period.
-Alarm Actions: Send a notification to devops-sns-topic.
+Use AWS CLI commands to launch the EC2 instance and create the alarm.
+Ensure the alarm is linked to the correct EC2 instance and SNS topic.
+Use verification commands to confirm both resources are created correctly.
 
-
-### Step 1: Launch EC2 Instance
-To launch an EC2 instance, follow these steps:
-1. Go to the AWS Management Console and navigate to the EC2 service.
-2. Click on "Launch Instance" and select an appropriate Ubuntu AMI.
-
-
-### Step 2: Create CloudWatch Alarm
-To create a CloudWatch alarm, follow these steps:
-1. Go to the AWS Management Console and navigate to the CloudWatch service.
-2. Click on "Alarms" in the left-hand menu and then click "Create Alarm".
-3. Click on "Select metric" and choose "EC2" > "Per-Instance Metrics" > "CPUUtilization".
-4. Select the metric for the devops-ec2 instance and click "Select metric".
-5. Configure the alarm settings:
-    - Statistic: Average
-    - Period: 5 minutes
-    - Threshold: >= 90%
-    - Datapoints to alarm: 1 out of 1
-6. Click "Next" and then select "SNS topic" as the notification method.
-7. Choose the existing SNS topic named devops-sns-topic and click "Next".
-8. Review the alarm configuration and click "Create alarm" to finalize the setup.
-## by command line interface (CLI):
-1. To launch an EC2 instance, use the following command:
+## Solution:
 ```bash
-aws ec2 run-instances --image-id <AMI-ID> --count 1 --instance-type t2.micro --key-name <KeyPairName> --security-group-ids <SecurityGroupID> --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=devops-ec2}]'
+# set your AWS region
+AWS_REGION=<region>
+
+# get Ubuntu AMI ID from AWS SSM (Ubuntu 22.04 LTS)
+AMI_ID=$(aws ssm get-parameter \
+    --name /aws/service/canonical/ubuntu/server/22.04/stable/current/amd64/hvm/ebs-gp2/ami-id \
+    --region $AWS_REGION \
+    --query 'Parameter.Value' \
+    --output text)
+
+# launch EC2 instance named devops-ec2
+# replace placeholders with valid values from your environment
+INSTANCE_ID=$(aws ec2 run-instances \
+    --region $AWS_REGION \
+    --image-id "$AMI_ID" \
+    --instance-type t2.micro \
+    --key-name <key-pair-name> \
+    --security-group-ids <security-group-id> \
+    --subnet-id <subnet-id> \
+    --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=devops-ec2}]' \
+    --query 'Instances[0].InstanceId' \
+    --output text)
+
+# wait until instance is running
+aws ec2 wait instance-running \
+    --region $AWS_REGION \
+    --instance-ids "$INSTANCE_ID"
+
+# get SNS topic ARN for devops-sns-topic
+TOPIC_ARN=$(aws sns list-topics \
+    --region $AWS_REGION \
+    --query "Topics[?contains(TopicArn, 'devops-sns-topic')].TopicArn | [0]" \
+    --output text)
+
+# create CloudWatch alarm
+aws cloudwatch put-metric-alarm \
+    --region $AWS_REGION \
+    --alarm-name devops-alarm \
+    --alarm-description "Alarm when EC2 CPU >= 90% for 5 minutes" \
+    --namespace AWS/EC2 \
+    --metric-name CPUUtilization \
+    --dimensions Name=InstanceId,Value="$INSTANCE_ID" \
+    --statistic Average \
+    --period 300 \
+    --evaluation-periods 1 \
+    --threshold 90 \
+    --comparison-operator GreaterThanOrEqualToThreshold \
+    --alarm-actions "$TOPIC_ARN" \
+    --treat-missing-data missing
 ```
-1. To create a CloudWatch alarm, use the following command:
-```bash
-aws cloudwatch put-metric-alarm --alarm-name devops-alarm --metric-name CPUUtilization --namespace AWS/EC2 --statistic Average --period 300 --threshold 90 --comparison-operator GreaterThanOrEqualToThreshold --evaluation-periods 1 --alarm-actions <SNS-Topic-ARN>
-```
 
-#3 To verify the alarm is set up correctly, you can use the following command:
+## Verification:
+1. Verify the EC2 instance named devops-ec2:
 ```bash
-aws cloudwatch describe-alarms --alarm-names devops-alarm
+aws ec2 describe-instances \
+    --region $AWS_REGION \
+    --filters "Name=tag:Name,Values=devops-ec2" \
+    --query "Reservations[].Instances[].{InstanceId:InstanceId,State:State.Name,Name:Tags[?Key=='Name']|[0].Value}"
+```
+2. Verify the CloudWatch alarm configuration:
+```bash
+aws cloudwatch describe-alarms \
+    --region $AWS_REGION \
+    --alarm-names devops-alarm
+```
+3. Verify alarm action points to devops-sns-topic:
+```bash
+aws cloudwatch describe-alarms \
+    --region $AWS_REGION \
+    --alarm-names devops-alarm \
+    --query "MetricAlarms[0].AlarmActions"
 ```
 
