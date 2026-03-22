@@ -1,10 +1,10 @@
 # Day 27: Deploying Virtual Machines in a Private Virtual Network
 
 ## 🎯 task:
--  The name of the VNet must be devops-priv-vnet, 
--  create a subnet named devops-priv-subnet under the same.
--  create a Virtual Machine named devops-priv-vm under this VNet.
--  create a Network Security Group (NSG) named devops-priv-nsg
+-  The name of the VNet must be xfusion-priv-vnet, 
+-  create a subnet named xfusion-priv-subnet under the same.
+-  create a Virtual Machine named xfusion-priv-vm under this VNet.
+-  create a Network Security Group (NSG) named xfusion-priv-nsg
 -  ensure that the NSG rules for the VM allow access only from within the VNet's CIDR block. 
 -  Ensure all resources are created in the Central US region.
 
@@ -13,7 +13,7 @@
    - Go to the Azure Portal.
    - Click on "Create a resource" and search for "Virtual Network".
    - Click "Create".
-   - Name it `devops-priv-vnet`.
+   - Name it `xfusion-priv-vnet`.
    - Select the Central US region.
    - Set the IPv4 address space (e.g., `10.0.0.0/16`).
    - Click "Create".
@@ -23,7 +23,7 @@
    - After the VNet is created, go to the VNet resource.
     - Click on "Subnets" under the Settings section.
    - Click "Add subnet".
-    - Name it `devops-priv-subnet`.
+    - Name it `xfusion-priv-subnet`.
     - Set the subnet address range (e.g., `10.0.1.0/24`).
     - Click "Create".
 
@@ -31,7 +31,7 @@
    - Go to the Azure Portal.
    - Click on "Create a resource" and search for "Network Security Group".
    - Click "Create".
-   - Name it `devops-priv-nsg`.
+   - Name it `xfusion-priv-nsg`.
    - Select the Central US region.
    - Click "Create".
 
@@ -54,33 +54,114 @@
    - Go to the Azure Portal.
    - Click on "Create a resource" and search for "Virtual Machine".
    - Click "Create".
-   - Name it `devops-priv-vm`.
+   - Name it `xfusion-priv-vm`.
    - Select the Central US region.
    - Choose an appropriate image (e.g., Ubuntu Server).
    - Choose a size (e.g., Standard B1s).
-   - Under "Networking", select the `devops-priv-vnet` and `devops-priv-subnet`.
-   - Under "Network security group", select "Use existing" and choose `devops-priv-nsg`.
+   - Under "Networking", select the `xfusion-priv-vnet` and `xfusion-priv-subnet`.
+   - Under "Network security group", select "Use existing" and choose `xfusion-priv-nsg`.
    - Click "Review + create" and then "Create".
 
 
 ## cli:
 ```bash
-# Create a resource group
-az group create --name devops-priv-rg --location centralus
-# Create a virtual network
-az network vnet create --resource-group devops-priv-rg --name devops-priv-vnet --address-prefixes
+az network vnet create \
+  --resource-group kml_rg_main-a5d100b5b7894b16 \
+  --name xfusion-priv-vnet \
+  --location centralus \
+  --address-prefix 10.0.0.0/16 \
+  --subnet-name xfusion-priv-subnet \
+  --subnet-prefix 10.0.1.0/24
 
-# Create a subnet
-az network vnet subnet create --resource-group devops-priv-rg --vnet-name devops-priv-vnet --name devops-priv-subnet --address-prefixes
 
-# Create a network security group
-az network nsg create --resource-group devops-priv-rg --name devops-priv-nsg --location centralus
 
-# Create an NSG rule to allow SSH access from within the VNet
-az network nsg rule create --resource-group devops-priv-rg --nsg-name devops-priv-nsg --name AllowSSHFromVNet --priority 1000 --source-address-prefixes
+  az network nsg create \
+  --resource-group kml_rg_main-a5d100b5b7894b16 \
+  --name xfusion-priv-nsg \
+  --location centralus
 
-az network nsg rule create --resource-group devops-priv-rg --nsg-name devops-priv-nsg --name AllowSSHFromVNet --priority 1000 --source-address-prefixes
+# Create strict SSH-only allow from VNet CIDR
+az network nsg rule create \
+  --resource-group kml_rg_main-a5d100b5b7894b16 \
+  --nsg-name xfusion-priv-nsg \
+  --name Allow-SSH-From-VNet-CIDR \
+  --priority 100 \
+  --direction Inbound \
+  --access Allow \
+  --protocol Tcp \
+  --source-address-prefixes 10.0.0.0/16 \
+  --source-port-ranges "*" \
+  --destination-address-prefixes "*" \
+  --destination-port-ranges 22
 
-# Create a virtual machine
-az vm create --resource-group devops-priv-rg --name devops-priv-vm --image Ubuntu2204 --size Standard_B1s --vnet-name devops-priv-vnet --subnet devops-priv-subnet --nsg devops-priv-nsg --admin-username azureuser --generate-ssh-keys
-```
+
+az network nsg rule create \
+  --resource-group kml_rg_main-a5d100b5b7894b16 \
+  --nsg-name xfusion-priv-nsg \
+  --name Deny-All-Inbound \
+  --priority 200 \
+  --direction Inbound \
+  --access Deny \
+  --protocol "*" \
+  --source-address-prefixes "*" \
+  --source-port-ranges "*" \
+  --destination-address-prefixes "*" \
+  --destination-port-ranges "*"
+
+
+az network vnet subnet update \
+  --resource-group kml_rg_main-a5d100b5b7894b16 \
+  --vnet-name xfusion-priv-vnet \
+  --name xfusion-priv-subnet \
+  --network-security-group xfusion-priv-nsg
+
+az vm create \
+  --resource-group kml_rg_main-a5d100b5b7894b16 \
+  --name xfusion-priv-vm \
+  --location centralus \
+  --image Ubuntu2204 \
+  --size Standard_B1s \
+  --vnet-name xfusion-priv-vnet \
+  --subnet xfusion-priv-subnet \
+  --nsg xfusion-priv-nsg \
+  --public-ip-address "" \
+  --admin-username azureuser \
+  --generate-ssh-keys \
+  --storage-sku Standard_LRS \
+  --os-disk-size-gb 64
+
+
+  az network nsg rule list \
+  --resource-group kml_rg_main-a5d100b5b7894b16 \
+  --nsg-name xfusion-priv-nsg \
+  --query "[].{name:name,priority:priority,src:sourceAddressPrefix,dstPort:destinationPortRange,access:access}" \
+  -o table
+
+
+
+  NIC_ID=$(az vm show \
+  --resource-group kml_rg_main-a5d100b5b7894b16 \
+  --name nautilus-priv-vm \
+  --query "networkProfile.networkInterfaces[0].id" -o tsv)
+
+
+
+az network nic update \
+  --ids $NIC_ID \
+  --network-security-group nautilus-priv-nsg
+
+
+
+az network nic show \
+  --ids $NIC_ID \
+  --query "networkSecurityGroup.id" -o tsv
+
+
+
+az network nsg rule list \
+  --resource-group kml_rg_main-a5d100b5b7894b16 \
+  --nsg-name nautilus-priv-nsg \
+  --query "[].{name:name,priority:priority,src:sourceAddressPrefix,dstPort:destinationPortRange,access:access}" \
+  -o table
+
+  ```
