@@ -73,8 +73,6 @@ az network vnet create \
   --subnet-name devops-priv-subnet \
   --subnet-prefix 10.0.1.0/24
 
-
-
   az network nsg create \
   --resource-group kml_rg_main-25c7d6040fb4467f \
   --name devops-priv-nsg \
@@ -130,38 +128,28 @@ az vm create \
   --storage-sku Standard_LRS \
   --os-disk-size-gb 64
 
-
   az network nsg rule list \
   --resource-group kml_rg_main-25c7d6040fb4467f \
   --nsg-name devops-priv-nsg \
   --query "[].{name:name,priority:priority,src:sourceAddressPrefix,dstPort:destinationPortRange,access:access}" \
   -o table
 
-
-
   NIC_ID=$(az vm show \
   --resource-group kml_rg_main-25c7d6040fb4467f \
   --name devops-priv-vm \
   --query "networkProfile.networkInterfaces[0].id" -o tsv)
 
-
-
 az network nic update \
   --ids $NIC_ID \
   --network-security-group devops-priv-nsg
 
-
-
 az network nic show \
   --ids $NIC_ID \
   --query "networkSecurityGroup.id" -o tsv
-
-
 
 az network nsg rule list \
   --resource-group kml_rg_main-25c7d6040fb4467f \
   --nsg-name devops-priv-nsg \
   --query "[].{name:name,priority:priority,src:sourceAddressPrefix,dstPort:destinationPortRange,access:access}" \
   -o table
-
   ```
