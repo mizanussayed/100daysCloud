@@ -73,31 +73,33 @@ check Auto-assign Public IP settings for the public subnet to ensure that instan
     - Configure iptables to allow traffic from the private subnet to access the internet through the NAT instance.
 
 ```bash
-sudo sysctl net.ipv4.ip_forward   ## tells the Linux kernel whether it is allowed to forward packets between network interfaces.
-## output
-net.ipv4.ip_forward = 0   NAT will NOT work
+# tells the Linux kernel whether it is allowed to forward packets between network interfaces.
+sudo sysctl net.ipv4.ip_forward
+#output
+#---> net.ipv4.ip_forward = 0   NAT will NOT work
 
-## Enableing NAT forwarding
+# Enableing NAT forwarding
 sudo sysctl -w net.ipv4.ip_forward=1
 ## output
-net.ipv4.ip_forward = 1   NAT CAN work
-
-## iptables entry
-
-sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+#---> net.ipv4.ip_forward = 1   NAT CAN work
 
 ## installed the iptables service
-
 sudo yum install -y iptables-services
 
-# saved the rule 
-sudo service iptables save
-
+# enable the iptables service to start on boot and start it immediately. 
 sudo systemctl enable iptables --now
-
 sudo systemctl status iptables
 
+# test is eth0 or not
+ip addr show
+ip a
+
+## iptables entry
+sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+
 sudo iptables -t nat -L -n -v
+sudo service iptables save
+sudo systemctl restart iptables
 ```
 ![alt text](image-7.png)
 
