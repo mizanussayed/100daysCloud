@@ -46,4 +46,4 @@ def lambda_handler(event, context):
 - Click on "Deploy" to save the changes.
 - Click on "Test" to create a test event and execute the function to verify it returns the expected output.
 
-![alt text](image-4.png)
+![deploy function](image-4.png)
