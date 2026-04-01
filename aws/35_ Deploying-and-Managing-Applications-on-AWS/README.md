@@ -29,23 +29,28 @@ Adjust the security groups so that the `nautilus-ec2` instance can connect to th
    - Choose `gp2` for storage type and set the storage size to `5GiB`.
    - Create a database named `nautilus_db`.
    - Keep the rest of the configurations as default and launch the instance.
+
 ![alt text](image.png)
 
 2. **Configure Security Groups**:
    - Go to the EC2 service and find the security group associated with the `nautilus-ec2` instance.
    - Edit the inbound rules to allow traffic on port 3306 for MySQL and port 80 for HTTP.
+
 ![alt text](image-2.png)
 
-![alt text](image-1.png)
+![alt text](image-4.png)
 
-![alt text](image-3.png)
+
+![alt text](image-5.png)
 
 3. **Connect to EC2 Instance**:
     - Use the AWS console to connect to the `nautilus-ec2` instance via SSH.
     - If you don't have an SSH key, create one on the aws-client host and add the public key to the authorized keys of the root user on the EC2 instance.
 ```bash
 ssh-keygen
+cat .ssh/id_rsa.pub
 ```
+
 ![alt text](image-3.png)
 
 4. **Copy index.php to EC2 Instance**:
@@ -55,6 +60,7 @@ ssh-keygen
 5. **Access the Application**:
     - Open a web browser and navigate to the public IP address of the `nautilus-ec2` instance.
     - You should see a "Connected successfully".
-    ![alt text](image-1.png)
+
+![alt text](image-1.png)
 
 
