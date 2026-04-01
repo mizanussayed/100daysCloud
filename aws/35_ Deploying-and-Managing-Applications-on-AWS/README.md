@@ -40,6 +40,10 @@ Adjust the security groups so that the `nautilus-ec2` instance can connect to th
 3. **Connect to EC2 Instance**:
     - Use the AWS console to connect to the `nautilus-ec2` instance via SSH.
     - If you don't have an SSH key, create one on the aws-client host and add the public key to the authorized keys of the root user on the EC2 instance.
+```bash
+ssh-keygen
+```
+![alt text](image-3.png)
 
 4. **Copy index.php to EC2 Instance**:
     - Use SCP or any file transfer method to copy the index.php file from the aws-client host to the /var/www/html/ directory on the `nautilus-ec2` instance.
@@ -48,5 +52,6 @@ Adjust the security groups so that the `nautilus-ec2` instance can connect to th
 5. **Access the Application**:
     - Open a web browser and navigate to the public IP address of the `nautilus-ec2` instance.
     - You should see a "Connected successfully".
+    ![alt text](image-1.png)
 
 
