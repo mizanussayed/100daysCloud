@@ -43,8 +43,8 @@ Ensure the file displays the message Connected successfully, confirming the conn
 - Create the database and user with the following commands:
 ```sql
 CREATE DATABASE nautilus_db;
-CREATE USER 'nautilus_user'@'%' IDENTIFIED BY 'password123';
-GRANT ALL PRIVILEGES ON nautilus_db.* TO 'nautilus_user';
+CREATE USER 'nautilus_user'@'40.114.74.30' IDENTIFIED BY 'password123';
+GRANT ALL PRIVILEGES ON nautilus_db.* TO 'nautilus_user'@'40.114.74.30';
 FLUSH PRIVILEGES;
 ```
 
