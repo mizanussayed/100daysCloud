@@ -1,21 +1,29 @@
 # Day 38: Deploying Containerized Applications with Amazon ECS
 
 ## 🎯 Objective
-Describe what this AWS lab accomplishes.
+The Nautilus DevOps team is tasked with deploying a containerized application using Amazon's container services. They need to create a private Amazon Elastic Container Registry (ECR) to store their Docker images and use Amazon Elastic Container Service (ECS) to deploy the application. The process involves building a Docker image from a given Dockerfile, pushing it to the ECR, and then setting up an ECS cluster to run the application.
 
-## 🛠 Steps Performed
-1.
-2.
-3.
+Create a Private ECR Repository:
 
-## 💻 Commands Used
-```bash
+Create a private ECR repository named devops-ecr to store Docker images.
+Build and Push Docker Image:
 
-```
+Use the Dockerfile located at /root/pyapp on the aws-client host.
+Build a Docker image using this Dockerfile.
+Tag the image with latest tag.
+Push the Docker image to the devops-ecr repository.
+Create and Configure ECS cluster:
 
-## 🧠 Concepts Covered
-- 
+1. Create an ECS cluster named devops-cluster using the Fargate launch type.
+Create an ECS Task Definition:
 
-## ✅ Outcome
-What was successfully achieved?
+Define a task named devops-taskdefinition using the Docker image from the devops-ecr ECR repository.
+Specify necessary CPU and memory resources.
+Deploy the Application Using ECS Service:
 
+Create a service named devops-service on the devops-cluster to run the task.
+Ensure the service runs at least one task.
+
+## Solution: video demonstration
+
+[![Watch demo](https://img.youtube.com/vi/00h0QGGso1s/0.jpg)](https://www.youtube.com/watch?v=00h0QGGso1s)
