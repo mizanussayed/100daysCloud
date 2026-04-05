@@ -26,4 +26,4 @@ Ensure the service runs at least one task.
 
 ## Solution: video demonstration
 
-[![Watch demo](https://img.youtube.com/vi/00h0QGGso1s/0.jpg)](https://www.youtube.com/watch?v=00h0QGGso1s)
+[![Watch demo](https://img.youtube.com/vi/00h0QGGso1s/0.jpg)](https://www.youtube.com/watch?v=ItoTlMXr2kw)

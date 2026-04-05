@@ -1,21 +1,8 @@
 # Day 38: Running Containers on Azure Virtual Machines
 
 ## 🎯 Objective
-Describe what you aim to achieve in this lab.
 
-## 🛠 Steps Performed
-1.
-2.
-3.
+## Solution: video demonstration
 
-## 💻 Commands Used
-```bash
-
-```
-
-## 📘 Notes
-Add important observations here.
-
-## ✅ Outcome
-What was successfully completed?
+[![Watch demo](https://img.youtube.com/vi/00h0QGGso1s/0.jpg)](https://youtu.be/2ggrEKGpU0s)
 
