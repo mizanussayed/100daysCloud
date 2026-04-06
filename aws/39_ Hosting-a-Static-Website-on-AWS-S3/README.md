@@ -12,5 +12,5 @@ Task Requirements:
 5. Verify that the website is accessible directly through the S3 website URL.
 
 ## video demo
-![Hosting a Static Website on AWS S3](https://youtu.be/ItoTlMXr2kw)(https://youtu.be/ItoTlMXr2kw)
+[![Watch demo](https://img.youtube.com/vi/00h0QGGso1s/0.jpg)](https://youtu.be/ItoTlMXr2kw)
 
