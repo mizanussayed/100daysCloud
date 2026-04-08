@@ -3,19 +3,9 @@
 ## 🎯 Objective
 Describe what this AWS lab accomplishes.
 
-## 🛠 Steps Performed
-1.
-2.
-3.
+# Video Demonstration
+[![Securing Data with AWS KMS](https://img.youtube.com/vi/VIDEO_ID/0.jpg)](https://www.youtube.com/watch?v=VIDEO_ID)
 
-## 💻 Commands Used
-```bash
 
-```
-
-## 🧠 Concepts Covered
-- 
-
-## ✅ Outcome
-What was successfully achieved?
+https://docs.aws.amazon.com/cli/latest/reference/kms/
 
