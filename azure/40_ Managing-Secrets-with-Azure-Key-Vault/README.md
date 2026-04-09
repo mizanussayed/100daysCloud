@@ -83,8 +83,6 @@ az keyvault key decrypt --vault-name <your-keyvault-name> --name <secret-name> -
 ```
 ![alt text](image.png)
 
-## Video Demonstration
-[![Managing Secrets with Azure Key Vault](https://img.youtube.com/vi/00h0QGGso1s/0.jpg)](https://www.youtube.com/watch?v=aeEqEoVywKE)
 
 ## reference
 https://learn.microsoft.com/en-us/cli/azure/keyvault/key?view=azure-cli-latest

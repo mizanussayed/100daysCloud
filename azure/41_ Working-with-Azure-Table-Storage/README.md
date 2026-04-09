@@ -18,3 +18,6 @@ Note: Use the Azure CLI to insert these tasks into the table.
 az storage entity insert --account-name nautilustablest29015 --table-name tasks --entity PartitionKey=tasks RowKey=1 description='Learn Table Storage' status='completed'
 az storage entity insert --account-name nautilustablest29015 --table-name tasks --entity PartitionKey=tasks RowKey=2 description='Build To-Do App' status='in-progress'
 ```
+
+## Video Demonstration
+[![Working with Azure Table Storage](https://img.youtube.com/vi/00h0QGGso1s/0.jpg)](https://www.youtube.com/watch?v=mCJ7U1rDzV4)
