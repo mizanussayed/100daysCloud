@@ -1,74 +1,39 @@
 # Day 40: Managing Secrets with Azure Key Vault
 
 ## 🎯 Objective
-
 The Nautilus DevOps team is focusing on improving their data security by using Azure Key Vault. Your task is to create a Key Vault with an RSA key and manage the encryption and decryption of a pre-existing sensitive file using this key.
 
 Specific Requirements:
 
-Create a Key Vault:
+1. Create a Key Vault:
 
-Name the Key Vault xfusion-3810.
-Create the vault in the East US region.
-Use the Standard pricing tier.
-Set Soft Delete retention to 7 days.
-Use the Vault access policy permission model.
-Configure an access policy that allows Get, List, Encrypt, and Decrypt permissions for the lab identity.
-Create an RSA Key:
+- Name the Key Vault xfusion-3810.
+- Create the vault in the East US region.
+- Use the Standard pricing tier.
+- Set Soft Delete retention to 7 days.
+- Use the Vault access policy permission model.
+- Configure an access policy that allows Get, List, Encrypt, and - - - Decrypt permissions for the lab identity.
 
-Create a key named xfusion-key within the Key Vault.
-Key type: RSA.
-RSA key size: 4096.
-Leave all other settings as default.
-Encrypt the Sensitive Data:
+2. Create an RSA Key:
 
-Use the key to encrypt the provided SensitiveData.txt file (located in /root/) on the azure-client host.
-Use the RSA-OAEP algorithm.
-Base64 encode the plaintext before encryption.
-Save the encrypted version as EncryptedData.bin in the /root/ directory.
-Note: If you encounter a permissions error, retrieve the Service Principal ID using:
-az account show --query user.name -o tsv
-and grant the required Key Vault permissions.
+- Create a key named xfusion-key within the Key Vault.
+- Key type: RSA.
+- RSA key size: 4096.
+- Leave all other settings as default.
+- Encrypt the Sensitive Data:
 
-Verify Decryption:
-Decrypt EncryptedData.bin.
-Base64 decode the decrypted output.
-Save the result as DecryptedData.txt in /root/.
-Ensure the decrypted file matches the original SensitiveData.txt.
-Ensure that the Key Vault and key are correctly configured. The validation script will test your configuration by decrypting the EncryptedData.bin file using the key you created.The Nautilus DevOps team is focusing on improving their data security by using Azure Key Vault. Your task is to create a Key Vault with an RSA key and manage the encryption and decryption of a pre-existing sensitive file using this key.
+3. Use the key to encrypt the provided SensitiveData.txt file (located in /root/) on the azure-client host.
+- Use the RSA-OAEP algorithm.
+- Base64 encode the plaintext before encryption.
+- Save the encrypted version as EncryptedData.bin in the /root/ directory.
 
-Specific Requirements:
+4. Verify Decryption:
+- Decrypt EncryptedData.bin.
+- Base64 decode the decrypted output.
+- Save the result as DecryptedData.txt in /root/.
+- Ensure the decrypted file matches the original SensitiveData.txt.
+- Ensure that the Key Vault and key are correctly configured.
 
-Create a Key Vault:
-
-Name the Key Vault nautilus-15535.
-Create the vault in the East US region.
-Use the Standard pricing tier.
-Set Soft Delete retention to 7 days.
-Use the Vault access policy permission model.
-Configure an access policy that allows Get, List, Encrypt, and Decrypt permissions for the lab identity.
-Create an RSA Key:
-
-Create a key named nautilus-key within the Key Vault.
-Key type: RSA.
-RSA key size: 4096.
-Leave all other settings as default.
-Encrypt the Sensitive Data:
-
-Use the key to encrypt the provided SensitiveData.txt file (located in /root/) on the azure-client host.
-Use the RSA-OAEP algorithm.
-Base64 encode the plaintext before encryption.
-Save the encrypted version as EncryptedData.bin in the /root/ directory.
-Note: If you encounter a permissions error, retrieve the Service Principal ID using:
-az account show --query user.name -o tsv
-and grant the required Key Vault permissions.
-
-Verify Decryption:
-Decrypt EncryptedData.bin.
-Base64 decode the decrypted output.
-Save the result as DecryptedData.txt in /root/.
-Ensure the decrypted file matches the original SensitiveData.txt.
-Ensure that the Key Vault and key are correctly configured. The validation script will test your configuration by decrypting the EncryptedData.bin file using the key you created.
 
 ## encript secrets in Azure Key Vault and access them securely from your applications.
 
