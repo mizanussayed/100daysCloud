@@ -43,3 +43,5 @@ aws cloudformation deploy --template-file /root/xfusion-priority-stack.yml --sta
 
 
 
+## Video Walkthrough
+[![Integrating AWS SQS and SNS for Reliable Messaging](https://img.youtube.com/vi/6RkPxRE8pRM/0.jpg)](https://youtu.be/6RkPxRE8pRM)
