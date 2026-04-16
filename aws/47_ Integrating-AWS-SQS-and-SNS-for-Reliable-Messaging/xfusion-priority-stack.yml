@@ -1,0 +1,124 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'CloudFormation template for AWS SQS and SNS priority queue integration'
+
+Parameters:
+  LambdaCodeBucket:
+    Type: String
+    Description: S3 bucket that contains the Lambda deployment package
+  LambdaCodeKey:
+    Type: String
+    Description: S3 key for the Lambda deployment package
+
+Resources:
+  PriorityTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: xfusion Priority Queues Topic
+      TopicName: xfusion-Priority-Queues-Topic
+
+  HighPriorityQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: xfusion-High-Priority-Queue
+      VisibilityTimeout: 300
+      MessageRetentionPeriod: 1209600
+
+  LowPriorityQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: xfusion-Low-Priority-Queue
+      VisibilityTimeout: 300
+      MessageRetentionPeriod: 1209600
+
+  HighPrioritySubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      Protocol: sqs
+      TopicArn: !Ref PriorityTopic
+      Endpoint: !GetAtt HighPriorityQueue.Arn
+      RawMessageDelivery: true
+      FilterPolicy:
+        priority:
+          - high
+
+  LowPrioritySubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      Protocol: sqs
+      TopicArn: !Ref PriorityTopic
+      Endpoint: !GetAtt LowPriorityQueue.Arn
+      RawMessageDelivery: true
+      FilterPolicy:
+        priority:
+          - low
+
+  PriorityQueuesPolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !Ref HighPriorityQueue
+        - !Ref LowPriorityQueue
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowSNSSendToHighPriorityQueue
+            Effect: Allow
+            Principal:
+              Service: sns.amazonaws.com
+            Action: sqs:SendMessage
+            Resource: !GetAtt HighPriorityQueue.Arn
+            Condition:
+              ArnEquals:
+                aws:SourceArn: !Ref PriorityTopic
+          - Sid: AllowSNSSendToLowPriorityQueue
+            Effect: Allow
+            Principal:
+              Service: sns.amazonaws.com
+            Action: sqs:SendMessage
+            Resource: !GetAtt LowPriorityQueue.Arn
+            Condition:
+              ArnEquals:
+                aws:SourceArn: !Ref PriorityTopic
+
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: lambda_execution_role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/AmazonSQSFullAccess
+
+  PrioritiesQueueFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: xfusion-priorities-queue-function
+      Runtime: python3.9
+      Handler: index.lambda_handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Timeout: 30
+      Code:
+        S3Bucket: !Ref LambdaCodeBucket
+        S3Key: !Ref LambdaCodeKey
+      Environment:
+        Variables:
+          high_priority_queue: !Ref HighPriorityQueue
+          low_priority_queue: !Ref LowPriorityQueue
+
+Outputs:
+  TopicArn:
+    Value: !Ref PriorityTopic
+  HighPriorityQueueUrl:
+    Value: !Ref HighPriorityQueue
+  LowPriorityQueueUrl:
+    Value: !Ref LowPriorityQueue
+  LambdaFunctionName:
+    Value: !Ref PrioritiesQueueFunction
