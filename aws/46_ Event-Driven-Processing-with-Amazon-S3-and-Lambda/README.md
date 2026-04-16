@@ -13,4 +13,4 @@ The DevOps team is working on automating file management between two S3 buckets.
 8. Verify that a log entry has been created in the DynamoDB table containing the file copy details.
 
 ## Video Walkthrough
-[![Event-Driven Processing with Amazon S3 and Lambda](https://img.youtube.com/vi/00h0QGGso1s/0.jpg)](https://www.youtube.com/watch?v=00h0QGGso1s)
+[![Event-Driven Processing with Amazon S3 and Lambda](https://img.youtube.com/vi/00h0QGGso1s/0.jpg)](https://youtu.be/C0d7fO435o0)
