@@ -1,73 +1,73 @@
 # Day 49: Centralized Audit Logging with VPC Peering
 
 ## 🎯 Objective
-The Nautilus xfusion team needs to build a secure and scalable log aggregation setup within their AWS environment. The goal is to gather log files from an internal EC2 instance running in a private VPC, transfer them securely to another EC2 instance in a public VPC, and then push those logs to a secure S3 bucket.
+The Nautilus datacenter team needs to build a secure and scalable log aggregation setup within their AWS environment. The goal is to gather log files from an internal EC2 instance running in a private VPC, transfer them securely to another EC2 instance in a public VPC, and then push those logs to a secure S3 bucket.
 
-1) A VPC named `xfusion-priv-vpc` already exists with a private subnet named    `xfusion-priv-subnet`, a route table named `xfusion-priv-rt`, and an EC2 instance named `xfusion-priv-ec2` (using ubuntu image). This instance uses the SSH key pair `xfusion-key.pem` already available on the AWS client host at /root/.ssh/.
+1) A VPC named `datacenter-priv-vpc` already exists with a private subnet named    `datacenter-priv-subnet`, a route table named `datacenter-priv-rt`, and an EC2 instance named `datacenter-priv-ec2` (using ubuntu image). This instance uses the SSH key pair `datacenter-key.pem` already available on the AWS client host at /root/.ssh/.
 
 2) Your task is to:
 
-    - Create a new VPC named `xfusion-pub-vpc`.
-    - Create a subnet named `xfusion-pub-subnet` and a route table named `xfusion-pub-rt` under this public VPC.
-    - Attach an internet gateway to `xfusion-pub-vpc` and configure the public route table to enable internet access.
-    - Launch an EC2 instance named `xfusion-pub-ec2` into the public subnet using the same key pair as the private instance.
-    - Create an IAM role named `xfusion-s3-role` with `PutObject` permission to an S3 bucket and attach it to the public EC2 instance.
-    - Create a new private S3 bucket named `xfusion-s3-logs-23884`.
-    - Configure a VPC Peering named `xfusion-vpc-peering` between the private and public VPCs.
-    - Modify both `xfusion-priv-rt` and `xfusion-pub-rt` to route each other's CIDR blocks through the peering connection.
+    - Create a new VPC named `datacenter-pub-vpc`.
+    - Create a subnet named `datacenter-pub-subnet` and a route table named `datacenter-pub-rt` under this public VPC.
+    - Attach an internet gateway to `datacenter-pub-vpc` and configure the public route table to enable internet access.
+    - Launch an EC2 instance named `datacenter-pub-ec2` into the public subnet using the same key pair as the private instance.
+    - Create an IAM role named `datacenter-s3-role` with `PutObject` permission to an S3 bucket and attach it to the public EC2 instance.
+    - Create a new private S3 bucket named `datacenter-s3-logs-27658`.
+    - Configure a VPC Peering named `datacenter-vpc-peering` between the private and public VPCs.
+    - Modify both `datacenter-priv-rt` and `datacenter-pub-rt` to route each other's CIDR blocks through the peering connection.
     - On the private instance, configure a cron job to push the /var/log/boots.log file to the public instance (using scp or rsync).
     - On the public instance, configure a cron job to push that same file to the created S3 bucket.
 
-The uploaded file must be stored in the S3 bucket under the path `xfusion-priv-vpc/boot/boots.log`.
+The uploaded file must be stored in the S3 bucket under the path `datacenter-priv-vpc/boot/boots.log`.
 
 ## Solution Steps
 
-### ssh & jump host setup to access private EC2 instance
+### Public EC2 instance
 ```bash
-## First, we will access the public EC2 instance using the SSH key pair
-ssh -i /root/.ssh/xfusion-key.pem ubuntu@10.11.1.186
+chmod 400 /root/.ssh/datacenter-key.pem
+ssh -i /root/.ssh/datacenter-key.pem ec2-user@<PUBLIC-IP>
 
-## exit from public EC2 instance
-exit
-cp .ssh/xfusion-key.pem /root/.ssh/id_rsa
-chmod 600 /root/.ssh/id_rsa
-
-## Now we will use this public EC2 instance as a jump host to access the private EC2 instance
-ssh ubuntu@10.11.2.186 -J ubuntu@10.11.1.186
-ssh-keygen -t ed25519
-```
-
-
-## install cronjob on ubuntu EC2 instances
-```bash
-ssh -i /root/.ssh/xfusion-key.pem ubuntu@10.11.1.186
-sudo apt-get update
-sudo apt-get install cron -y
-sudo service cron start
-sudo service cron status
-```
-
-## install cronjob on Amazon Linux EC2 instances
-```bash
-ssh -i /root/.ssh/xfusion-key.pem ec2-user@10.11.1.186
+## install cron and aws-cli on public EC2 instance
 sudo yum update -y
-sudo yum install cronie -y
-sudo service crond start
-sudo service crond status
+sudo yum install -y cronie aws-cli
+sudo systemctl start crond
+sudo systemctl enable crond
 ```
-
-## Edit Crontab on Private EC2 Instance
+### Prepare Private EC2
+Connect via jump host:
 ```bash
-ssh -i /root/.ssh/xfusion-key.pem ubuntu@10.11.1.186
-crontab -e
-## Add the following line
-* * * * * scp  /var/log/boots.log ubuntu@10.11.1.186:/home/ubuntu/
+ssh -i /root/.ssh/datacenter-key.pem ubuntu@<PRIVATE-IP> -J ec2-user@<PUBLIC-IP>
+
+## install cronjob on Ubuntu EC2 instance
+sudo apt update
+sudo apt install -y cron
+sudo systemctl start cron
+sudo systemctl enable cron
 ```
-## Edit Crontab on Public EC2 Instance
+
+### Setup SSH Key for Automation (CRITICAL) On private EC2:
+
 ```bash
-ssh -i /root/.ssh/xfusion-key.pem ubuntu@10.11.1.186
+mkdir -p ~/.ssh
+
+# Paste contents of datacenter-key.pem from AWS client host
+vi ~/.ssh/id_rsa
+
+chmod 400 ~/.ssh/id_rsa
+scp -i ~/.ssh/id_rsa /var/log/boots.log ec2-user@<PUBLIC-PRIVATE-IP>:/home/ec2-user/boots.log
+
+# Add cron job to push logs to public EC2 instance every minute
 crontab -e
-* * * * * aws s3 cp /home/ubuntu/boots.log s3://xfusion-s3-logs-14417/xfusion-priv-vpc/boot/boots.log
+* * * * * scp -i ~/.ssh/id_rsa /var/log/boots.log ec2-user@<PUBLIC-PRIVATE-IP>:/home/ec2-user/
 ```
 
+### Setup Cron Job on Public EC2 to Push Logs to S3
+```bash
+crontab -e
+* * * * * aws s3 cp /home/ec2-user/boots.log s3://datacenter-s3-logs-27658/datacenter-priv-vpc/boot/boots.log
+```
 
+## Final Verification
+```bash
+aws s3 ls s3://datacenter-s3-logs-27658/datacenter-priv-vpc/boot/
+```
