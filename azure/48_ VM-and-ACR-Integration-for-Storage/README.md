@@ -40,5 +40,8 @@ curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 4) login to ACR from VM and pull image
 ```bash
 docker login devopsacr5312.azurecr.io --username devopsacr5312  --password <ACR_PASSWORD>
-docker run -d -p 80:80 devopsacr5312.azurecr.io/devops/python-app:latest --name python-app -v /root/config.json:/app/config.json
+docker run -d -p 80:80 --name python-app -v ~/config.json:/app/config.json devopsacr5312.azurecr.io/devops/python-app:latest
 ```
+
+## Video Walkthrough
+[![VM and ACR Integration for Storage](https://img.youtube.com/vi/Ll3ktIXu9dw/0.jpg)](https://youtu.be/Ll3ktIXu9dw)
