@@ -36,7 +36,8 @@ sudo systemctl enable crond
 ### Prepare Private EC2
 Connect via jump host:
 ```bash
-ssh -i /root/.ssh/datacenter-key.pem ubuntu@<PRIVATE-IP> -J ec2-user@<PUBLIC-IP>
+cp /root/.ssh/datacenter-key.pem ~/.ssh/id_rsa
+ssh ubuntu@<PRIVATE-IP> -J ec2-user@<PUBLIC-IP>
 
 ## install cronjob on Ubuntu EC2 instance
 sudo apt update
@@ -71,3 +72,5 @@ crontab -e
 ```bash
 aws s3 ls s3://datacenter-s3-logs-27658/datacenter-priv-vpc/boot/
 ```
+## video demonstration
+[![Centralized Audit Logging with VPC Peering](https://img.youtube.com/vi/FDU-Wjk_n6g/0.jpg)](https://youtu.be/FDU-Wjk_n6g)
