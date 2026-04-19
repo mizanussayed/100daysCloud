@@ -22,9 +22,9 @@
 ## 🛠️ Solution
 1) login to ACR, then build and push docker image locally
 ```bash
-docker login devopsacr5312 .azurecr.io --username devopsacr5312  --password <ACR_PASSWORD>
-docker build -t devopsacr5312 .azurecr.io/devops/python-app:latest /root/pyapp
-docker push devopsacr5312 .azurecr.io/devops/python-app:latest
+docker login devopsacr5312.azurecr.io --username devopsacr5312  --password <ACR_PASSWORD>
+docker build -t devopsacr5312.azurecr.io/devops/python-app:latest /root/pyapp
+docker push devopsacr5312.azurecr.io/devops/python-app:latest
 ```
 
 3) install docker & azure cli after ssh into VM
@@ -39,6 +39,6 @@ curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 
 4) login to ACR from VM and pull image
 ```bash
-docker login devopsacr5312 .azurecr.io --username devopsacr5312  --password <ACR_PASSWORD>
-docker run -d -p 80:80 devopsacr5312 .azurecr.io/devops/python-app:latest --name python-app -v /root/config.json:/app/config.json
+docker login devopsacr5312.azurecr.io --username devopsacr5312  --password <ACR_PASSWORD>
+docker run -d -p 80:80 devopsacr5312.azurecr.io/devops/python-app:latest --name python-app -v /root/config.json:/app/config.json
 ```
