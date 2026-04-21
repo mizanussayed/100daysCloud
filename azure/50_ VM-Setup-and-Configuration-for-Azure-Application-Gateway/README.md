@@ -24,3 +24,5 @@
 - Verify that the Application Gateway distributes traffic to both VMs.
 Ensure that accessing the Application Gateway URL displays either "Welcome to KKE Labs:Version 1" or "Welcome to KKE Labs:Version 2" depending on the load balancing.
 
+## Video Walkthrough:
+[![VM Setup and Configuration for Azure Application Gateway](https://img.youtube.com/vi/hoaZbcmXI0M/0.jpg)](https://youtu.be/hoaZbcmXI0M)
